@@ -33,7 +33,8 @@ cappuccino_index |>
     y = "Country",
     title = "The Cappuccino Index",
     fill = "Minutes worked",
-    subtitle = "Wage growth and purchasing power around the world contribute to a disparity in the index"
+    subtitle = "Wage growth and purchasing power around the world contribute to disparity around the world",
+    caption = "Source: Tidy Tuesday"
   )
   
   
