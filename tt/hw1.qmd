@@ -4,7 +4,6 @@ format: html
 ---
 
 ```{r}
-install.packages("tidytuesdayR")
 tuesdata <- tidytuesdayR::tt_load(2026, week = 36)
 cafe <- tuesdata$cafe
 cappuccino_index <- tuesdata$cappuccino_index

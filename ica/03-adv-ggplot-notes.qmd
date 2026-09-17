@@ -250,7 +250,8 @@ ggplot(weather_clean, aes(x = dateInYear, y = CulmPrec, group = Month)) +
     data = weather_clean %>% filter(RecordP == TRUE), 
     aes(x = dateInYear, y = CulmPrec),
     shape = 25, fill = "black", color = "black", size = 2
-  )
+  ) +
+  theme_classic()
 
 ```
 ## Done!
