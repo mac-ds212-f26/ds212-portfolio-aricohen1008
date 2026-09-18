@@ -469,19 +469,20 @@ cookieconsent.run({
 <div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>cappuccino_index <span class="sc">|&gt;</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">mutate</span>(<span class="at">country =</span> <span class="fu">fct_reorder</span>(country, index, <span class="at">.desc =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> index, <span class="at">y =</span> country, <span class="at">fill =</span> index) ) <span class="sc">+</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"green"</span>, <span class="at">high =</span> <span class="st">"red"</span>,</span>
-<span id="cb3-5"><a href="#cb3-5"></a>                      <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(cappuccino_index<span class="sc">$</span>index), <span class="at">by =</span> <span class="dv">25</span>) ) <span class="sc">+</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>  <span class="fu">labs</span>(</span>
-<span id="cb3-9"><a href="#cb3-9"></a>    <span class="at">x =</span> <span class="st">"Minutes Worked"</span>,</span>
-<span id="cb3-10"><a href="#cb3-10"></a>    <span class="at">y =</span> <span class="st">"Country"</span>,</span>
-<span id="cb3-11"><a href="#cb3-11"></a>    <span class="at">title =</span> <span class="st">"The Cappuccino Index"</span>,</span>
-<span id="cb3-12"><a href="#cb3-12"></a>    <span class="at">fill =</span> <span class="st">"Minutes worked"</span>,</span>
-<span id="cb3-13"><a href="#cb3-13"></a>    <span class="at">subtitle =</span> <span class="st">"Wage growth and purchasing power around the world contribute to disparity around the world"</span>,</span>
-<span id="cb3-14"><a href="#cb3-14"></a>    <span class="at">caption =</span> <span class="st">"Source: Tidy Tuesday"</span></span>
-<span id="cb3-15"><a href="#cb3-15"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">filter</span>(index <span class="sc">&lt;</span> <span class="dv">50</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> index, <span class="at">y =</span> country, <span class="at">fill =</span> index) ) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"green"</span>, <span class="at">high =</span> <span class="st">"red"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6"></a>                      <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(cappuccino_index<span class="sc">$</span>index), <span class="at">by =</span> <span class="dv">5</span>) ) <span class="sc">+</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-10"><a href="#cb3-10"></a>    <span class="at">x =</span> <span class="st">"Minutes Worked"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11"></a>    <span class="at">y =</span> <span class="st">"Country"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12"></a>    <span class="at">title =</span> <span class="st">"The Cappuccino Index [under 50 minutes]"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13"></a>    <span class="at">fill =</span> <span class="st">"Minutes worked"</span>,</span>
+<span id="cb3-14"><a href="#cb3-14"></a>    <span class="at">subtitle =</span> <span class="st">"Wage growth and purchasing power around the world contribute to disparity around the world"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15"></a>    <span class="at">caption =</span> <span class="st">"By Ari Cohen, Sept 18, 2026, Source: Tidy Tuesday Cappuccino Index"</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display">
 <div>
 <figure class="figure"><p><img src="hw1_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="960"></p>
@@ -994,25 +995,26 @@ cookieconsent.run({
 <span id="cb4-23"><a href="#cb4-23"></a></span>
 <span id="cb4-24"><a href="#cb4-24"></a></span>
 <span id="cb4-25"><a href="#cb4-25"></a></span>
-<span id="cb4-26"><a href="#cb4-26"></a><span class="in">```{r fig.height = 10, fig.width = 10}</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a><span class="in">```{r fig.height = 8, fig.width = 10}</span></span>
 <span id="cb4-27"><a href="#cb4-27"></a>cappuccino_index <span class="sc">|&gt;</span></span>
 <span id="cb4-28"><a href="#cb4-28"></a>  <span class="fu">mutate</span>(<span class="at">country =</span> <span class="fu">fct_reorder</span>(country, index, <span class="at">.desc =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb4-29"><a href="#cb4-29"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> index, <span class="at">y =</span> country, <span class="at">fill =</span> index) ) <span class="sc">+</span></span>
-<span id="cb4-30"><a href="#cb4-30"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"green"</span>, <span class="at">high =</span> <span class="st">"red"</span>,</span>
-<span id="cb4-31"><a href="#cb4-31"></a>                      <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(cappuccino_index<span class="sc">$</span>index), <span class="at">by =</span> <span class="dv">25</span>) ) <span class="sc">+</span></span>
-<span id="cb4-32"><a href="#cb4-32"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb4-33"><a href="#cb4-33"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
-<span id="cb4-34"><a href="#cb4-34"></a>  <span class="fu">labs</span>(</span>
-<span id="cb4-35"><a href="#cb4-35"></a>    <span class="at">x =</span> <span class="st">"Minutes Worked"</span>,</span>
-<span id="cb4-36"><a href="#cb4-36"></a>    <span class="at">y =</span> <span class="st">"Country"</span>,</span>
-<span id="cb4-37"><a href="#cb4-37"></a>    <span class="at">title =</span> <span class="st">"The Cappuccino Index"</span>,</span>
-<span id="cb4-38"><a href="#cb4-38"></a>    <span class="at">fill =</span> <span class="st">"Minutes worked"</span>,</span>
-<span id="cb4-39"><a href="#cb4-39"></a>    <span class="at">subtitle =</span> <span class="st">"Wage growth and purchasing power around the world contribute to disparity around the world"</span>,</span>
-<span id="cb4-40"><a href="#cb4-40"></a>    <span class="at">caption =</span> <span class="st">"Source: Tidy Tuesday"</span></span>
-<span id="cb4-41"><a href="#cb4-41"></a>  )</span>
-<span id="cb4-42"><a href="#cb4-42"></a>  </span>
+<span id="cb4-29"><a href="#cb4-29"></a>  <span class="fu">filter</span>(index <span class="sc">&lt;</span> <span class="dv">50</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-30"><a href="#cb4-30"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> index, <span class="at">y =</span> country, <span class="at">fill =</span> index) ) <span class="sc">+</span></span>
+<span id="cb4-31"><a href="#cb4-31"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"green"</span>, <span class="at">high =</span> <span class="st">"red"</span>,</span>
+<span id="cb4-32"><a href="#cb4-32"></a>                      <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(cappuccino_index<span class="sc">$</span>index), <span class="at">by =</span> <span class="dv">5</span>) ) <span class="sc">+</span></span>
+<span id="cb4-33"><a href="#cb4-33"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb4-34"><a href="#cb4-34"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-36"><a href="#cb4-36"></a>    <span class="at">x =</span> <span class="st">"Minutes Worked"</span>,</span>
+<span id="cb4-37"><a href="#cb4-37"></a>    <span class="at">y =</span> <span class="st">"Country"</span>,</span>
+<span id="cb4-38"><a href="#cb4-38"></a>    <span class="at">title =</span> <span class="st">"The Cappuccino Index [under 50 minutes]"</span>,</span>
+<span id="cb4-39"><a href="#cb4-39"></a>    <span class="at">fill =</span> <span class="st">"Minutes worked"</span>,</span>
+<span id="cb4-40"><a href="#cb4-40"></a>    <span class="at">subtitle =</span> <span class="st">"Wage growth and purchasing power around the world contribute to disparity around the world"</span>,</span>
+<span id="cb4-41"><a href="#cb4-41"></a>    <span class="at">caption =</span> <span class="st">"By Ari Cohen, Sept 18, 2026, Source: Tidy Tuesday Cappuccino Index"</span></span>
+<span id="cb4-42"><a href="#cb4-42"></a>  )</span>
 <span id="cb4-43"><a href="#cb4-43"></a>  </span>
-<span id="cb4-44"><a href="#cb4-44"></a><span class="in">```</span></span>
+<span id="cb4-44"><a href="#cb4-44"></a>  </span>
+<span id="cb4-45"><a href="#cb4-45"></a><span class="in">```</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
