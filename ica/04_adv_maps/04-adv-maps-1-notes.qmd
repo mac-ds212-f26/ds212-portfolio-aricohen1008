@@ -83,8 +83,8 @@ See [Spatial Data Appendix](https://hash-mac.github.io/ds212site-f26/app/spatial
 nc <- st_read(system.file("shape/nc.shp", package = "sf"))
 
 # Read in shapefiles just downloaded
-mn_cities <- st_read("Add correct relative path to city_and_township_population_centers.shp")
-mn_water <- st_read("Add correct relative path to LakesAndRivers.shp")
+mn_cities <- st_read("/Users/aricohen/ds212-portfolio-aricohen1008/ica/04_adv_maps/City_And_Township_Population_Centers/City_And_Township_Population_Centers.shp")
+mn_water <- st_read("/Users/aricohen/ds212-portfolio-aricohen1008/ica/04_adv_maps/Lakes_and_Rivers/Lakes_and_Rivers.shp")
 ```
 
 The `sf` package reads in spatial data in `data.frame`-like format. Using the `class()` function we can check the **class** (type) of object that we just read in. Note the presence of the "sf" and "data.frame" classes:
@@ -94,8 +94,6 @@ class(nc)
 class(mn_cities)
 class(mn_water)
 ```
-
-
 
 
 When we read in spatial objects, it is useful to check what CRS underlies the data. We can do that with `st_crs()` from the `sf` package:
@@ -126,6 +124,9 @@ ggplot(nc_transformed) +
     theme_classic()
 ```
 
+
+
+
 The goal is to use <https://epsg.io> to **find two CRSs** that result in a North Carolina map that is noticeably different from the original in the NAD27 CRS.
 
 Take a look at the **function** below that re-maps a spatial object using a new CRS.
@@ -136,22 +137,25 @@ Take a look at the **function** below that re-maps a spatial object using a new 
 - Use your function to make two new maps using your chosen CRSs.
 
 ```{r transform_via_function}
-transform_and_plot <- function(spatial_obj, new_crs) {
+transform_and_plot <- function(spatial_obj, new_crs, title) {
     spatial_obj |> 
         st_transform(crs = new_crs) |> 
         ggplot() +
             geom_sf() +
-            theme_classic()
+            theme_classic() +
+    labs(Title = "North Carolina")
 }
 
 # Example usage of this function (using a South Carolina CRS)
 transform_and_plot(nc, new_crs = "EPSG:32133")
-
+transform_and_plot(nc, new_crs = "EPSG:20353", title = "Australia (Queensland, South, West)")
 
 ```
 
 **Verify your understanding:** If you had point location data that was not in the NAD27 CRS, what would you expect about the accuracy of how they would be overlaid on the original North Carolina map?
 
+
+It would be be rotated and different size
 
 ## MN Map with Multiple Layers
 
@@ -179,7 +183,14 @@ names(mn_counties)[names_counties == "state_name"] <- c("state_name1", "state_na
 - If the datasets don't all have the same CRS, use `st_transform()` to update the datasets to have the same CRS as `mn_cities`. You can use `crs = st_crs(mn_cities)` within `st_transform()`.
 
 ```{r}
+st_crs(mn_cities)
+st_crs(mn_water)
+st_crs(mn_counties)
 
+mn_counties <- mn_counties |>
+  st_transform(crs = st_crs(mn_cities))
+
+st_crs(mn_counties)
 
 ```
 
@@ -193,6 +204,11 @@ names(mn_counties)[names_counties == "state_name"] <- c("state_name1", "state_na
 - Install the `ggthemes` package, and add the following layer to use a clean map theme: `+ ggthemes::theme_map()`
 
 ```{r}
+library(ggthemes)
+
+ggplot() +
+  geom_sf(data = mn_cities) +
+  geom_sf(data = mn_counties)
 
 
 ```
