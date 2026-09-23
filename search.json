@@ -54,6 +54,61 @@
     ]
   },
   {
+    "objectID": "tt/hw02-p2.html",
+    "href": "tt/hw02-p2.html",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "",
+    "text": "Instructions\nTask: Open up the New York Times article A Summer of Strikes, and scroll down to the plot titled “Union membership has fallen sharply over the past four decades (Share of the work force in a union, by industry)”.\nUsing ggplot2 and other tools in R, recreate this plot. Note that you will need to create the data underlying the plot yourself. You can create this data in R with tibble(). You can also write the data in Excel or Google Sheets and export it as a CSV file.\nRequirements:\nBonus: Additional possibilities to enhance your visualization include adjusting the default aesthetics of the arrows, aligning your plots neatly, and adding margins in order to left-align the y-axis text.",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw02-p2.html#instructions",
+    "href": "tt/hw02-p2.html#instructions",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "",
+    "text": "Overall\n\nPanels for “All workers”, “By Sector”, and “By Industry” are shown.\nArrows showing the change from 1983 to 2022 are shown.\n\nNote: be sure that the arrows all point in the correct direction!\n\n\nThe actual percentages in 1983 and 2022 are shown as text.\nX-axis tick marks are at 0, 25, and 50.\nPlot title says “Union membership has fallen sharply over the past four decades”.\nPlot subtitle says “Share of the work force in a union, by industry”.\n\n\nResource reflection\n\nAt least 1 resource is listed\nAt least 3 sentences about resources and their helpfulness in the task",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw02-p2.html#setup",
+    "href": "tt/hw02-p2.html#setup",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "Setup",
+    "text": "Setup\n\nCodelibrary(tidyverse)\n\n\n\nCodeunion &lt;- tibble(\n  group = c(\"\", rep(\"BY SECTOR\", 2), rep(\"BY INDUSTRY\", 10)),\n  category = c(\n    \"All workers\",\n    \"Private sector\", \"Public sector\",\n    \"Transportation and utilities\", \"Manufacturing\", \"Mining\",\n    \"Construction\", \"Education and health\",\n    \"Arts, entertainment and recreation\", \"Business services\",\n    \"Retail, food and hospitality\", \"Public administration\", \"Agriculture\"\n  ),\n  share_1983 = c(20, 17, 37, 47, 28, 27, 28, 26, 17, 10, 8, 30, 4),\n  share_2022 = c(10,  6, 33, 16,  8,  7, 13, 17,  7,  3, 3, 28, 5)\n) |&gt;\n  mutate(\n    group    = fct_inorder(group),\n    category = fct_rev(fct_inorder(category)),   \n    dir      = sign(share_2022 - share_1983)     \n  )",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw02-p2.html#visualization",
+    "href": "tt/hw02-p2.html#visualization",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "Visualization",
+    "text": "Visualization\n\nCodeggplot(union, aes(y = category)) +\n  geom_segment(\n    aes(x = share_1983, xend = share_2022, yend = category),\n    color = \"navyblue\", linewidth = 1,\n    arrow = arrow(length = unit(0.1, \"in\"), type = \"open\")\n  ) +\n  # 1983 label sits beyond the tail, 2022 label beyond the arrowhead\n  geom_text(aes(x = share_1983 - dir * 2.2, label = share_1983), fontface = \"bold\") +\n  geom_text(aes(x = share_2022 + dir * 2.2, label = share_2022), fontface = \"bold\") +\n  facet_grid(group ~ ., scales = \"free_y\", space = \"free_y\") +\n  scale_x_continuous(breaks = c(0, 25, 50)) +\n  coord_cartesian(xlim = c(0, 50), clip = \"off\") +\n  labs(\n    title    = \"Union membership has fallen sharply over the past four decades\",\n    subtitle = \"Share of the work force in a union, by industry\",\n    caption  = \"Source: Current Population Survey, via unionstats.com\",\n    x = NULL, y = NULL\n  ) +\n   theme_minimal() +\n   theme(\n     plot.title.position = \"plot\",\n    strip.text.y        = element_text(angle = 0, hjust = 0, face = \"plain\"),\n    axis.text.y         = element_text(hjust = 0)\n  )",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw02-p2.html#resources-reflection-required",
+    "href": "tt/hw02-p2.html#resources-reflection-required",
+    "title": "HW02-P2 Adv Data Viz",
+    "section": "Resources Reflection (required)",
+    "text": "Resources Reflection (required)\nList the resources you used to help with this assignment then write 3-5 sentence reflection on which resources were most helpful in finishing this task.\nResources:\n\nica 3\nggplot documentation\ntibble documentation\n\nReflection:\nI initially struggled with bringing in the dataset through a csv file, so I switched over to the tibble method. I applied the tibble documentation to create the union dataset. Finally I used the ica to reflect on what ggplot techniques I used effectively to complete this remodel of the nyt visual.",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>HW02-P2 Adv Data Viz</span>"
+    ]
+  },
+  {
     "objectID": "pcl/pcl.html",
     "href": "pcl/pcl.html",
     "title": "Pre-Class Learning Summaries",
@@ -61,7 +116,7 @@
     "text": "R",
     "crumbs": [
       "Pre-Class Learnings",
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Pre-Class Learning Summaries</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Pre-Class Learning Summaries</span>"
     ]
   },
   {
@@ -72,7 +127,7 @@
     "text": "Quarto\n\n\n\nfrom qmd4sci.njtierney.com",
     "crumbs": [
       "Pre-Class Learnings",
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Pre-Class Learning Summaries</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Pre-Class Learning Summaries</span>"
     ]
   },
   {
@@ -83,7 +138,7 @@
     "text": "Add content here",
     "crumbs": [
       "In-Class Activities",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>ICA Sample 1</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>ICA Sample 1</span>"
     ]
   },
   {
@@ -94,7 +149,7 @@
     "text": "Add content here",
     "crumbs": [
       "In-Class Activities",
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>ICA Sample 2</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>ICA Sample 2</span>"
     ]
   },
   {
@@ -105,7 +160,7 @@
     "text": "Add content here",
     "crumbs": [
       "Extras",
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Extra Sample 1</span>"
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Extra Sample 1</span>"
     ]
   },
   {
@@ -116,7 +171,7 @@
     "text": "Add content here",
     "crumbs": [
       "Extras",
-      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Extra Sample 2</span>"
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Extra Sample 2</span>"
     ]
   }
 ]
