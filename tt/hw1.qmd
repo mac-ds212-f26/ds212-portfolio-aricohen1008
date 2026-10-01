@@ -1,0 +1,42 @@
+---
+title: "hw1"
+format: html
+---
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2026, week = 36)
+cafe <- tuesdata$cafe
+cappuccino_index <- tuesdata$cappuccino_index
+
+cafe$country <- gsub("\u00a0", " ", cafe$country)
+cappuccino_index$country <- gsub("\u00a0", " ", cappuccino_index$country)
+```
+
+```{r}
+library(tidyverse)
+library(tidytuesdayR)
+```
+
+
+
+```{r fig.height = 8, fig.width = 10}
+cappuccino_index |>
+  mutate(country = fct_reorder(country, index, .desc = TRUE)) |>
+  filter(index < 50) |>
+  ggplot(aes(x = index, y = country, fill = index) ) +
+  scale_fill_gradient(low = "green", high = "red",
+                      breaks = seq(0, max(cappuccino_index$index), by = 5) ) +
+  geom_col() +
+  theme_classic() +
+  labs(
+    x = "Minutes Worked",
+    y = "Country",
+    title = "The Cappuccino Index [under 50 minutes]",
+    fill = "Minutes worked",
+    subtitle = "Wage growth and purchasing power around the world contribute to disparity around the world",
+    caption = "By Ari Cohen, Sept 18, 2026, Source: Tidy Tuesday Cappuccino Index"
+  )
+  
+  
+```
+
