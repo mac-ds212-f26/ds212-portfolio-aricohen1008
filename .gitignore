@@ -71,3 +71,4 @@ _freeze/
 *.aux
 *.toc
 tt/census_api_key.txt.rtf
+tt/census_api_key.txt
