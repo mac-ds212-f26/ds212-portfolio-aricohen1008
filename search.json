@@ -109,6 +109,259 @@
     ]
   },
   {
+    "objectID": "tt/hw03-p1.html",
+    "href": "tt/hw03-p1.html",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "",
+    "text": "Introduction\nThe following exercises will use census tract tidycensus data for Ramsey and Hennepin county and crash data (2019-2022) from the pedestrian/bike crash database for St. Paul within Ramsey county in the Twin Cities.\nRequirements:",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#introduction",
+    "href": "tt/hw03-p1.html#introduction",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "",
+    "text": "Explore ACS and enter an addition variable to code\nDownload and Read in roads data\nEnsure both census2020 and crashes are same CRS\nCrop roads (at least to Ramsey and Hennepin counties)\nJoin crashes and census to calculate number of crashes per tract\nJoin census2020 and crashes per tract\nChoropleth map of number of crashes per tract + use of scale_fill_gradientn()\nChoropleth map coloring census tracts by a census variable + crash locations as points + scale_fill_gradientn()\nSentence Interpretation in Data Context\n2 non-map visuals of number of crashes vs census variables\nSentence Interpretation in Data Context",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#request-u.s.-census-data-api-key",
+    "href": "tt/hw03-p1.html#request-u.s.-census-data-api-key",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "0 Request U.S. Census Data API Key",
+    "text": "0 Request U.S. Census Data API Key\nIn order to retrieve data from the U.S. Census website, and API key is required. Follow the steps below to obtain yours and use it in this homework:\n\nGo to https://api.census.gov/data/key_signup.html and request an API key.\nSave the received key into a file along side this file with the name census_api_key.txt–make sure that the file contains nothing other than the key.\nOpen GitHub Desktop -&gt; right click census_api_key.txt and select Ignore file (add to .gitignore) to avoid exposing your key to others",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#load-one-more-variable",
+    "href": "tt/hw03-p1.html#load-one-more-variable",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "1 Load One More Variable",
+    "text": "1 Load One More Variable\nThe following code loads census data for Ramsey counties and reads in the pedestrian/bike crash data. Adjust this code to load in one additional census variable that you think might serve as useful context for crash data. To do this:\n\nLook at the documentation for get_acs() by entering ?tidycensus::get_acs in the Console.\nLook at the Searching for variables documentation from the tidycensus package. Use the function in this documentation to find one variable to add to the variables argument in the get_acs() function below.\nRename the variable that you picked to have a more descriptive name within rename().\n\n\nEnter the new variable you selected (e.g., B01003_001) here: ____\nEnter the new name for that variable (e.g., population) here: ____\n\n\nCodelibrary(sf)\nlibrary(dplyr)\nlibrary(stringr)\nlibrary(tidycensus)\nlibrary(readr )\nlibrary(ggplot2)\n\n\n\nCodecensus2020 &lt;- tidycensus::get_acs(\n    year = 2020,\n    state = \"MN\",\n    geography = \"tract\",\n    variables = c(\"B01003_001\", \"B19013_001\", \"B23006_023\", \"B25058_001\", \"B25107_001\", \"B25003_001\", \"B25003_002\", \"B25003_003\", \"B25077_001\", \"B08201_002\"),\n    output = \"wide\",\n    geometry = TRUE,\n    key = readLines(\"census_api_key.txt\")\n\n) |&gt;\n    filter(word(NAME, 4) %in% c(\"Ramsey\")) |&gt;\n    mutate(\n        tract = word(NAME, 3),\n        tract = str_remove(tract, \",\"),\n        county = word(NAME, 4)\n    ) |&gt;\n    select(-NAME) |&gt;\n    rename(\n        \"population\" = \"B01003_001E\",\n        \"medianIncome\" = \"B19013_001E\",\n        \"bachelors\" = \"B23006_023E\",\n        \"medContractRent\" = \"B25058_001E\",\n        \"tenureTotal\" = \"B25003_001E\",\n        \"tenureOwned\" = \"B25003_002E\",\n        \"tenureRented\" = \"B25003_003E\",\n        \"medianHomeValue\"= \"B25077_001E\",\n        \"noVehicleHouseholds\" = \"B08201_002E\"\n    ) |&gt;\n    select(-contains(\"_\"))\n\ncrashes &lt;- read_csv(\"https://mac-stat.github.io/data/Crash.csv\") |&gt;\n    filter(!is.na(Latitude), !is.na(Longitude))",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#download-shapefile",
+    "href": "tt/hw03-p1.html#download-shapefile",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "2 Download Shapefile",
+    "text": "2 Download Shapefile\nVisit DATA.GOV and download the Shapefile Zip File (tl_2019_27_prisecroads.zip) to the data/raw folder of this homework then unzip.\nLoad in the roads shapefile using st_read(), and transform roads to have the same CRS as census2020 if necessary.\n\nCoderoads &lt;- sf::st_read(\"data/raw/tl_2019_27_prisecroads.shp\")\n\nReading layer `tl_2019_27_prisecroads' from data source \n  `/Users/aricohen/ds212-portfolio-aricohen1008/tt/data/raw/tl_2019_27_prisecroads.shp' \n  using driver `ESRI Shapefile'\nSimple feature collection with 4309 features and 4 fields\nGeometry type: LINESTRING\nDimension:     XY\nBounding box:  xmin: -97.23724 ymin: 43.4995 xmax: -89.58524 ymax: 49.00066\nGeodetic CRS:  NAD83\n\nCode# Check CRS of roads and transform if necessary\nst_crs(roads)\n\nCoordinate Reference System:\n  User input: NAD83 \n  wkt:\nGEOGCRS[\"NAD83\",\n    DATUM[\"North American Datum 1983\",\n        ELLIPSOID[\"GRS 1980\",6378137,298.257222101,\n            LENGTHUNIT[\"metre\",1]]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433]],\n    CS[ellipsoidal,2],\n        AXIS[\"latitude\",north,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        AXIS[\"longitude\",east,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n    ID[\"EPSG\",4269]]\n\nCodest_crs(census2020)\n\nCoordinate Reference System:\n  User input: NAD83 \n  wkt:\nGEOGCRS[\"NAD83\",\n    DATUM[\"North American Datum 1983\",\n        ELLIPSOID[\"GRS 1980\",6378137,298.257222101,\n            LENGTHUNIT[\"metre\",1]]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433]],\n    CS[ellipsoidal,2],\n        AXIS[\"latitude\",north,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        AXIS[\"longitude\",east,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n    ID[\"EPSG\",4269]]",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#transofrm-to-sf-object",
+    "href": "tt/hw03-p1.html#transofrm-to-sf-object",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "3 Transofrm to sf Object",
+    "text": "3 Transofrm to sf Object\nTransform the crashes data frame to a sf object that has point geometry using the code below.\n\nCodecrashes &lt;- st_as_sf(crashes, coords = c(\"Longitude\", \"Latitude\"), crs = \"NAD83\")",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#check-crss",
+    "href": "tt/hw03-p1.html#check-crss",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "4 Check CRSs",
+    "text": "4 Check CRSs\nCheck if the CRSs are the same for census2020 and crashes using st_crs(). Transform to ensure they are exactly the same.\n\nCodesf::st_crs(census2020) == sf::st_crs(crashes)\n\n[1] TRUE",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#crop",
+    "href": "tt/hw03-p1.html#crop",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "5 Crop",
+    "text": "5 Crop\nUse st_crop() to crop the roads and census2020 datasets to the area we are interested in (crashes in St. Paul within Ramsey County). To determine the region to crop to, you will need to use st_bbox() on a spatial data object that only pertains to St. Paul within Ramsey County.\n\nCodecrop_roads1 &lt;- \n  st_bbox(crashes)\ncrop_roads2 &lt;- census2020 %&gt;%\n  st_bbox(geometry)\n\n\n\nCoderoads_sub &lt;- st_crop(roads, crop_roads1)\ncensus2020_sub &lt;- st_crop(roads, crop_roads2)\n\n\n\nCoderoads_sub1 &lt;- st_crop(roads,crop_roads1)\n\n\n\nCoderoads_sub2 &lt;- st_crop(roads,crop_roads2)",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#join-spatial-datasets",
+    "href": "tt/hw03-p1.html#join-spatial-datasets",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "6 Join Spatial Datasets",
+    "text": "6 Join Spatial Datasets\nJoin the crashes and census dataset together and count the number of crashes per census tract. The function st_join can join to spatial data sets according to whether the spatial geometries of the right table intersect with the spatial geometries of the left table. It matters which order you join the datasets in!\n\nCodecrashes_per_tract &lt;- st_join(crashes, census2020) |&gt;\n    st_drop_geometry() |&gt; # removes geometry - makes the following calculation more efficient \n    filter(!is.na(Accident_Datetime)) |&gt;\n    count(tract)",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#join-census",
+    "href": "tt/hw03-p1.html#join-census",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "7 Join Census",
+    "text": "7 Join Census\nJoin the census data with crashes_per_tract and then use a filter of n &gt; 0 to only keep the census tracts where crashes were recorded instead of all of Ramsey County. Again, order matters!\n\nCodecrashes_per_tract_geo &lt;- census2020 |&gt; # sf object with census geometry goes first\n    left_join(crashes_per_tract, by = \"tract\") |&gt;\n    filter(n &gt; 0)",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#pedestrianbike-crashes-per-census-tract",
+    "href": "tt/hw03-p1.html#pedestrianbike-crashes-per-census-tract",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "8 Pedestrian/Bike Crashes per Census Tract",
+    "text": "8 Pedestrian/Bike Crashes per Census Tract\nCreate a map that shows the number of pedestrian/bike crashes per census tract. Write one sentence about the patterns you notices; interpret your findings in the data context.\n\nUse scale_fill_gradientn() to set up a meaningful color scale for the census tract colors.\nInclude a map layer for the roads.\n\n\nCodeggplot()  +\n    geom_sf(data = roads_sub1, fill = \"NA\") +\n    geom_sf(data = crashes_per_tract_geo, aes(fill = n)) + scale_fill_gradient(low = \"lightblue\", high = 'red') + \n    ggthemes::theme_map() +\n    theme_classic()\n\n\n\n\n\n\n\nI notice that most of the crashes occur in places with higher population density, and nearby freeways such as the downtown st. paul area. This tells me that higher density and high volume and rapid road networks are positively correlated with car crashes.",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#crash-locations",
+    "href": "tt/hw03-p1.html#crash-locations",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "9 Crash Locations",
+    "text": "9 Crash Locations\nCreate one map that shows crash locations as points and colors census tracts by one different census variable. Write one sentence about the patterns you notice; interpret your findings in the data context.\n\nUse scale_fill_gradientn() to set up a color scale for the census tract colors.\nInclude a layer for the roads.\n\n\nCodeggplot()  +\n  geom_sf(data = roads_sub1, fill = \"NA\") +\n  geom_sf(data = crashes_per_tract_geo, aes(fill = medianIncome)) + \n  scale_fill_gradient(low = \"lightblue\", high = 'red') + \n  geom_point(data = crashes, aes(x = X, y = Y), color = \"black\", size = 1, alpha = 0.4) +\n  ggthemes::theme_map() +\n  theme(legend.position = \"bottom\",  legend.text = element_text(angle = 45, hjust = 1))\n\n\n\n\n\n\n\nLooking at the map, pedestrian and bike crashes seem to be more concentrated in lower income areas compared to higher income areas.",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#number-of-crashes-and-census-data",
+    "href": "tt/hw03-p1.html#number-of-crashes-and-census-data",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "10 Number of Crashes and Census Data",
+    "text": "10 Number of Crashes and Census Data\nCreate two other visuals (that are not maps) showing the relationships between the number of crashes and census data. Write one sentence about the patterns you notice; interpret your findings in the data context.\n\nCodecrashes_bachelors &lt;- crashes_per_tract_geo %&gt;%\n  mutate(share_no_vehicle_households = noVehicleHouseholds / population)\n\nggplot(crashes_bachelors, aes(x = share_no_vehicle_households, y = n)) +\n  geom_point(color = \"purple\", alpha = 0.6) +\n  geom_smooth(method = \"lm\", se = FALSE, color = \"red\") +\n  labs(\n    x = \"Share of Population without a Vehicle\",\n    y = \"Number of Crashes\",\n    title = \"Crashes and No Vehicle Households\"\n  ) +\n  theme_minimal()\n\n\n\n\n\n\n\nTracts with population without a vehicle are more likely to have more crashes\n\nCodecrashes_tenure &lt;- crashes_per_tract_geo %&gt;%\n  mutate(share_rented = tenureRented / tenureTotal)\n\nggplot(crashes_tenure, aes(x = share_rented, y = n)) +\n  geom_point(color = \"darkgreen\", alpha = 0.6) +\n  geom_smooth(method = \"lm\", se = FALSE, color = \"orange\") +\n  labs(\n    x = \"Share of Housing Units Rented\",\n    y = \"Number of Crashes\",\n    title = \"Crashes and Housing Tenure Patterns\"\n  ) +\n  theme_minimal()\n\n\n\n\n\n\n\nTracts with more housing units being rented are more likely to have crashes",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p1.html#resources-reflection-required",
+    "href": "tt/hw03-p1.html#resources-reflection-required",
+    "title": "HW03-P1 Adv Map Viz",
+    "section": "Resources Reflection (required)",
+    "text": "Resources Reflection (required)\nList the resources you used to help with this assignment then write 3-5 sentence reflection on which resources were most helpful in finishing this task.\nResources:\n-R documentation -Talked to my classmates -Ica 4-spatial viz\nReflection:\nI used the ica 4 resource the most. It was also helpful to get guidance from my classmates when I was confused. I also used the r documentation for a couple of functions I was unsure about.",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>HW03-P1 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p2.html",
+    "href": "tt/hw03-p2.html",
+    "title": "HW03-P2 Adv Map Viz",
+    "section": "",
+    "text": "Introduction\nThe US Walkability Index dataset provides relative walkability information for all 2019 census block groups. Through these exercises, we will explore walkability patterns across the United States.\nRequirements:",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>HW03-P2 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p2.html#introduction",
+    "href": "tt/hw03-p2.html#introduction",
+    "title": "HW03-P2 Adv Map Viz",
+    "section": "",
+    "text": "Downloaded data and read it in\nMN plot of walkability (filtering + choropleth)\nsave filtered dataset as R Data file\nGet US county boundaries, transform to have same CRS if necessary\nSpatial join (order matters), Weighted mean and SD by county\nCounty-level map of Average Walkability of a state of choice\nCounty-level map of SD in Walkability of a state of choice\nScatterplot of SD and Average Walkability overall\nScatterplot of SD and Average Walkability faceted by state\nInsight sentences about graphic",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>HW03-P2 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p2.html#download-read-data",
+    "href": "tt/hw03-p2.html#download-read-data",
+    "title": "HW03-P2 Adv Map Viz",
+    "section": "1 Download & Read Data",
+    "text": "1 Download & Read Data\nGo to DATA.GOV, search for “walkability index”, and download the US Walkability Index dataset (the Zip file called WalkabilityIndex.zip). Unzip this file within the data/raw folder of this homework.\nRead in the dataset with st_read() by providing a relative path to the WalkabilityIndex/Natl_WI.gdb folder (as opposed to a file within that folder). This will take a few seconds. You should see a message using driver OpenFileGDB during this process.\n\nCodelibrary(sf)\nlibrary(dplyr)\nlibrary(stringr)\nlibrary(tidycensus)\nlibrary(readr)\nlibrary(ggplot2)\nlibrary(USAboundaries)\nlibrary(Hmisc)\n\n\n\nCodewalk_index &lt;- st_read(\"../data/raw/WalkabilityIndex/Natl_WI.gdb\")\n\nReading layer `NationalWalkabilityIndex' from data source \n  `/Users/aricohen/ds212-portfolio-aricohen1008/data/raw/WalkabilityIndex/Natl_WI.gdb' \n  using driver `OpenFileGDB'\nSimple feature collection with 220739 features and 29 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: -10434580 ymin: -83867.97 xmax: 3407868 ymax: 6755033\nProjected CRS: USA_Contiguous_Albers_Equal_Area_Conic_USGS_version",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>HW03-P2 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p2.html#mn-walkability",
+    "href": "tt/hw03-p2.html#mn-walkability",
+    "title": "HW03-P2 Adv Map Viz",
+    "section": "2 MN Walkability",
+    "text": "2 MN Walkability\nLet’s first get a sense for the data by making a map of walkability indices for Minnesota. You will first need to filter the walk_index dataset by using the STATEFP variable. STATEFP contains the state’s FIPS code which is \"27\" for Minnesota. The NatWalkInd variable contains the walkability indices. Save this smaller dataset in a data/processed folder as walk_index_mn.RData, which is an R Data file.\n\nCodewalk_index_mn &lt;- walk_index |&gt; # Code for filtering to MN\n  filter(STATEFP == \"27\")\n\nsave(walk_index_mn, file = '../data/processed/walk_index_mn.RData')\n\n\n\nCodeload('../data/processed/walk_index_mn.RData')\n\n# Plot walkability data for MN\nggplot() +\n  geom_sf(data = walk_index_mn, aes(fill = NatWalkInd))",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>HW03-P2 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p2.html#us-county-boundaries",
+    "href": "tt/hw03-p2.html#us-county-boundaries",
+    "title": "HW03-P2 Adv Map Viz",
+    "section": "3 US County Boundaries",
+    "text": "3 US County Boundaries\nWe will start setting up to do a nationwide exploration of walkability. Use the us_counties() function within the USAboundaries package to obtain the most current low resolution county boundaries for all US counties. (Look up the documentation for this function to see how to structure the arguments.)\nIf needed, transform all_us_counties to have the same CRS as the Walkability Index dataset.\n\nCodeall_us_counties &lt;- us_counties(map_date = 2024, resolution = \"low\", states = NULL)\nall_us_states &lt;- us_states(map_date = 2024, resolution = \"low\", states = NULL)\n\nwalk_index_mn &lt;- st_as_sf(walk_index_mn, coords = c(\"Longitude\", \"Latitude\"), crs = \"NAD83\")\n\nst_crs(walk_index_mn)\n\nCoordinate Reference System:\n  User input: USA_Contiguous_Albers_Equal_Area_Conic_USGS_version \n  wkt:\nPROJCRS[\"USA_Contiguous_Albers_Equal_Area_Conic_USGS_version\",\n    BASEGEOGCRS[\"NAD83\",\n        DATUM[\"North American Datum 1983\",\n            ELLIPSOID[\"GRS 1980\",6378137,298.257222101,\n                LENGTHUNIT[\"metre\",1]]],\n        PRIMEM[\"Greenwich\",0,\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        ID[\"EPSG\",4269]],\n    CONVERSION[\"USA_Contiguous_Albers_Equal_Area_Conic_USGS_version\",\n        METHOD[\"Albers Equal Area\",\n            ID[\"EPSG\",9822]],\n        PARAMETER[\"Latitude of false origin\",23,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8821]],\n        PARAMETER[\"Longitude of false origin\",-96,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8822]],\n        PARAMETER[\"Latitude of 1st standard parallel\",29.5,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8823]],\n        PARAMETER[\"Latitude of 2nd standard parallel\",45.5,\n            ANGLEUNIT[\"degree\",0.0174532925199433],\n            ID[\"EPSG\",8824]],\n        PARAMETER[\"Easting at false origin\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8826]],\n        PARAMETER[\"Northing at false origin\",0,\n            LENGTHUNIT[\"metre\",1],\n            ID[\"EPSG\",8827]]],\n    CS[Cartesian,2],\n        AXIS[\"(E)\",east,\n            ORDER[1],\n            LENGTHUNIT[\"metre\",1]],\n        AXIS[\"(N)\",north,\n            ORDER[2],\n            LENGTHUNIT[\"metre\",1]],\n    USAGE[\n        SCOPE[\"Not known.\"],\n        AREA[\"United States (USA) - CONUS onshore - Alabama; Arizona; Arkansas; California; Colorado; Connecticut; Delaware; Florida; Georgia; Idaho; Illinois; Indiana; Iowa; Kansas; Kentucky; Louisiana; Maine; Maryland; Massachusetts; Michigan; Minnesota; Mississippi; Missouri; Montana; Nebraska; Nevada; New Hampshire; New Jersey; New Mexico; New York; North Carolina; North Dakota; Ohio; Oklahoma; Oregon; Pennsylvania; Rhode Island; South Carolina; South Dakota; Tennessee; Texas; Utah; Vermont; Virginia; Washington; West Virginia; Wisconsin; Wyoming.\"],\n        BBOX[24.41,-124.79,49.38,-66.91]],\n    ID[\"ESRI\",102039]]\n\n\n\nCodest_crs(all_us_counties)\n\nCoordinate Reference System:\n  User input: WGS 84 \n  wkt:\nGEOGCRS[\"WGS 84\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563,\n            LENGTHUNIT[\"metre\",1]]],\n    PRIMEM[\"Greenwich\",0,\n        ANGLEUNIT[\"degree\",0.0174532925199433]],\n    CS[ellipsoidal,2],\n        AXIS[\"latitude\",north,\n            ORDER[1],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n        AXIS[\"longitude\",east,\n            ORDER[2],\n            ANGLEUNIT[\"degree\",0.0174532925199433]],\n    ID[\"EPSG\",4326]]\n\n\n\nCodeall_us_counties &lt;- all_us_counties %&gt;%\n  st_transform(st_crs(walk_index_mn))\n\nall_us_states &lt;- all_us_states %&gt;%\n  st_transform(st_crs(walk_index))",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>HW03-P2 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p2.html#join-walkability-boundaries",
+    "href": "tt/hw03-p2.html#join-walkability-boundaries",
+    "title": "HW03-P2 Adv Map Viz",
+    "section": "4 Join Walkability & Boundaries",
+    "text": "4 Join Walkability & Boundaries\nUse st_join() within the sf package to insert walkability information into the all_us_counties dataset. Because the walkability information is available over regions that are smaller than counties, this join will merge in multiple regions of walkability information for each county.\nAfter the join, summarize the walkability index within each county with the weighted mean and weighted standard deviation, where the weights are given by the Shape_Area variable.\nBackground information about weighted summary measures: In an ordinary (unweighted) mean and standard deviation, each observation gets a weight of 1–that is, every observation contributes equally to the calculation. We want to compute a weighted measure because the regions within a county have different areas.\nTechinical implementation: You can install the Hmisc package and use the following:\n\nHmisc::wtd.mean(x, weights)\n\nHmisc::wtd.var(x, weights)\n\nThis computes a weighted variance–you’ll need to take the square root after this.\n\n\n\nNote: DON’T add library(Hmisc) to your package loading code chunk. Hmisc contains a function called summarize() that will conflict with dplyr::summarize().\nIn both functions, x represents the vector of numerical entries you want to summarize, and weights is a vector of the same length as x that gives the weight for each entry of x.\n\nCode# Use st_join to merge county boundaries and regions where we have walkability index data\nall_us_counties_walk_index &lt;- st_join(all_us_counties, walk_index_mn)\n\n# Use Hmisc::wtd.mean() and Hmisc::wtd.var() to compute the weighted mean and SD of the walkability index (weighted by Shape_Area)\nall_us_counties_walk_index_summ &lt;- all_us_counties_walk_index %&gt;%\n  group_by(COUNTYFP) %&gt;%\n  summarise(wtd_mean = Hmisc::wtd.mean(NatWalkInd, Shape_Area), wtd_var = Hmisc::wtd.var(NatWalkInd, Shape_Area) )\n\n\n\nCodeall_us_counties_wi_summ_us_state &lt;- all_us_counties_walk_index %&gt;%\n  group_by( STATEFP) %&gt;%\n  summarise(wtd_mean = Hmisc::wtd.mean(NatWalkInd, Shape_Area), wtd_var = Hmisc::wtd.var(NatWalkInd, Shape_Area) )",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>HW03-P2 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p2.html#county-average-walkability",
+    "href": "tt/hw03-p2.html#county-average-walkability",
+    "title": "HW03-P2 Adv Map Viz",
+    "section": "5 County Average Walkability",
+    "text": "5 County Average Walkability\nPick one state. For this state, make a map that allows you to see average walkability within a county and a map that allows you to see the variability in walkability across a county. (The goal of this part is to get a sense of the county-level walkability data before zooming out to do a nationwide exploration.)\n\nCodemn &lt;- all_us_counties %&gt;%\n  filter(state_name == \"Minnesota\")\n\nggplot() + geom_sf(data = mn) + geom_sf( data = all_us_counties_walk_index_summ, aes(fill = wtd_mean)) + scale_fill_gradient(low = \"darkblue\", high = \"lightblue\") \n\n\n\n\n\n\n\n\nCodeggplot() + geom_sf(data = mn) + geom_sf( data = all_us_counties_walk_index_summ, aes(fill = wtd_var)) + scale_fill_gradient(low = \"darkblue\", high = \"lightblue\")",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>HW03-P2 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p2.html#walkability-variability-vs-average",
+    "href": "tt/hw03-p2.html#walkability-variability-vs-average",
+    "title": "HW03-P2 Adv Map Viz",
+    "section": "6 Walkability Variability vs Average",
+    "text": "6 Walkability Variability vs Average\nMake plots (not maps) that allow you to explore if there is a relationship between the variability in walkability in a county and the average level of walkability in a county. One plot should depict the United States as a whole, and a second plot should break down this relationship across states. Summarize your findings and what you would be curious to explore next based on your explorations.\n\nCodeall_us_counties_wi_summ_us_state &lt;- all_us_counties_walk_index %&gt;%\n  group_by(STATEFP) %&gt;%\n  summarise(\n    wtd_mean = Hmisc::wtd.mean(NatWalkInd, Shape_Area), \n    wtd_var  = Hmisc::wtd.var(NatWalkInd, Shape_Area)\n  )\n\n# plot1\nggplot(all_us_counties_walk_index_summ, aes(x = wtd_mean, y = sqrt(wtd_var))) +\n  geom_point(alpha = 0.4, color = \"maroon\") +\n  geom_smooth(method = \"lm\", se = FALSE, color = \"blue\") +\n  labs(\n    title = \"US Counties: Walkability Variability vs Average\",\n    x = \"Weighted Mean Walkability\",\n    y = \"Weighted SD of Walkability\"\n  ) +\n  theme_classic()\n\n\n\n\n\n\n\n\nCodeall_us_counties_walk_index_summ &lt;- all_us_counties_walk_index %&gt;%\n  group_by(STATEFP, COUNTYFP) %&gt;%\n  summarise(\n    wtd_mean = Hmisc::wtd.mean(NatWalkInd, Shape_Area),\n    wtd_var  = Hmisc::wtd.var(NatWalkInd, Shape_Area)\n  )\n\n\nggplot(all_us_counties_walk_index_summ, aes(x = wtd_mean, y = sqrt(wtd_var))) +\n  geom_point(alpha = 0.5, color = \"orange\") +\n  geom_smooth(method = \"lm\", se = FALSE, color = \"red\") +\n  facet_wrap(~STATEFP) +\n  labs(\n    title = \"Walkability Variability vs Average, by State\",\n    x = \"Weighted Mean Walkability\",\n    y = \"Weighted SD of Walkability\"\n  ) +\n  theme_classic()\n\n\n\n\n\n\n\n\nSummarize your findings and what you would be curious to explore next based on your explorations.\n\nLooking at counties nationwide, places with a higher average walkability score also tend to show a wider spread in scores, so the two measures rise together. A likely reason is that walkable counties combine dense, pedestrian-friendly urban centers with car-oriented suburbs or rural stretches, which pushes their internal variation up. Counties with low average walkability, by contrast, are fairly uniform, with both the mean and the spread staying low. Minnesota follows the same pattern: urban counties score higher on average and differ more from one neighborhood to the next, while rural counties sit at low averages with little variation. Overall, walkability is unevenly spread inside counties, and urban cores raise both the typical score and the gaps within a county. I’d like to dig deeper into how urbanization, county size, and socioeconomic characteristics shape these patterns from state to state.",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>HW03-P2 Adv Map Viz</span>"
+    ]
+  },
+  {
+    "objectID": "tt/hw03-p2.html#resources-reflection-required",
+    "href": "tt/hw03-p2.html#resources-reflection-required",
+    "title": "HW03-P2 Adv Map Viz",
+    "section": "Resources Reflection (required)",
+    "text": "Resources Reflection (required)\nList the resources you used to help with this assignment then write 3-5 sentence reflection on which resources were most helpful in finishing this task.\nResources:\n\n-R documentation -Talked to my classmates -Ica 6 data wrangling\n\n\n\nReflection:\nI used the ica 6 resource alot, when I was confused with principles of wrangling. It was also helpful to get guidance from my classmates when I was confused. I also used the r documentation for a couple of functions I was unsure about.",
+    "crumbs": [
+      "TidyTuesday",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>HW03-P2 Adv Map Viz</span>"
+    ]
+  },
+  {
     "objectID": "pcl/pcl.html",
     "href": "pcl/pcl.html",
     "title": "Pre-Class Learning Summaries",
@@ -116,7 +369,7 @@
     "text": "R",
     "crumbs": [
       "Pre-Class Learnings",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Pre-Class Learning Summaries</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Pre-Class Learning Summaries</span>"
     ]
   },
   {
@@ -127,7 +380,7 @@
     "text": "Quarto\n\n\n\nfrom qmd4sci.njtierney.com",
     "crumbs": [
       "Pre-Class Learnings",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Pre-Class Learning Summaries</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Pre-Class Learning Summaries</span>"
     ]
   },
   {
@@ -138,7 +391,7 @@
     "text": "Add content here",
     "crumbs": [
       "In-Class Activities",
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>ICA Sample 1</span>"
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>ICA Sample 1</span>"
     ]
   },
   {
@@ -149,7 +402,7 @@
     "text": "Add content here",
     "crumbs": [
       "In-Class Activities",
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>ICA Sample 2</span>"
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>ICA Sample 2</span>"
     ]
   },
   {
@@ -160,7 +413,7 @@
     "text": "Add content here",
     "crumbs": [
       "Extras",
-      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Extra Sample 1</span>"
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Extra Sample 1</span>"
     ]
   },
   {
@@ -171,7 +424,7 @@
     "text": "Add content here",
     "crumbs": [
       "Extras",
-      "<span class='chapter-number'>11</span>  <span class='chapter-title'>Extra Sample 2</span>"
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Extra Sample 2</span>"
     ]
   }
 ]
